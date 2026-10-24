@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ffcc00">
+<title>Registros | Asistencia Escolar</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+<aside class="barra-lateral">
+<div class="logo-colegio"><h2>Asistencia<br>Escolar</h2></div>
+<nav class="menu-lateral" aria-label="Navegación principal">
+<a href="inicio.html" class="opcion-menu"><span class="icono"><i class="fa-solid fa-house"></i></span><span>Inicio</span></a>
+<a href="estudiantes.html" class="opcion-menu"><span class="icono"><i class="fa-solid fa-users"></i></span><span>Estudiantes</span></a>
+<a href="registros.html" class="opcion-menu activa" aria-current="page"><span class="icono"><i class="fa-solid fa-clipboard-list"></i></span><span>Registros</span></a>
+<a href="configuracion.html" class="opcion-menu"><span class="icono"><i class="fa-solid fa-gear"></i></span><span>Configuración</span></a>
+</nav>
+<div class="pie-lateral"><p>Institución Educativa<br>© 2026</p></div>
+</aside>
+<header class="barra-superior">
+<div class="fecha-hora"><span id="fecha-actual"></span><strong id="hora-actual"></strong></div>
+<div class="separador-superior" aria-hidden="true"></div>
+<a href="configuracion.html#usuarios" class="boton-perfil" title="Usuarios y seguridad" aria-label="Ir a Usuarios y seguridad"><i class="fa-solid fa-user"></i></a>
+</header>
+<main class="contenido-principal registros-pagina">
+<div class="encabezado-registros"><h1><i class="fa-solid fa-clipboard-list"></i> Registros de asistencia</h1></div>
+<section class="panel-registros">
+<h2 class="titulo-registros"><i class="fa-solid fa-table-list"></i> Historial de asistencia</h2>
+<p class="descripcion-registros">Consulta los registros por fecha, estudiante, curso y materia.</p>
+<div class="tabla-registros-contenedor">
+<table class="tabla-registros">
+<thead><tr><th>Fecha</th><th>Estudiante</th><th>Curso</th><th>Materia</th><th>Hora</th><th>Estado</th></tr></thead>
+<tbody id="tabla-registros"></tbody>
+</table>
+</div>
+<p id="sin-registros" hidden>Todavía no hay registros de asistencia.</p>
+</section>
+<section class="panel-editar-registros" id="panel-edicion">
+<div class="informacion-edicion">
+<div class="icono-candado"><i class="fa-solid fa-lock"></i></div>
+<div><h2 id="titulo-edicion">Editar registros</h2><p id="texto-edicion">Ingresa la contraseña del administrador para editar los registros.</p></div>
+</div>
+<form id="formulario-edicion" class="formulario-edicion">
+<div class="campo-contrasena"><i class="fa-solid fa-lock" aria-hidden="true"></i><input type="password" id="contrasena-edicion" placeholder="Contraseña del administrador" aria-label="Contraseña para editar registros" autocomplete="current-password" required></div>
+<button type="button" class="boton-cancelar" id="boton-cancelar">Cancelar</button>
+<button type="submit" class="boton-aceptar" id="boton-aceptar">Aceptar</button>
+</form>
+<p id="mensaje-edicion" class="mensaje-edicion" role="status" aria-live="polite"></p>
+</section>
+</main>
+<script>
+"use strict";
+const CLAVE_REGISTROS="asistencia_escolar_registros_v1";
+const CLAVE_INSTITUCIONES="instituciones-escolares";
+const cuerpoRegistros=document.getElementById("tabla-registros");
+const mensajeEdicion=document.getElementById("mensaje-edicion");
+const campoContrasena=document.getElementById("contrasena-edicion");
+const botonAceptar=document.getElementById("boton-aceptar");
+const botonCancelar=document.getElementById("boton-cancelar");
+const textoEdicion=document.getElementById("texto-edicion");
+let modoEdicion=false;
+let valoresOriginales="";
+let guardando=false;
+function leerArray(clave){try{const datos=JSON.parse(localStorage.getItem(clave)||"[]");return Array.isArray(datos)?datos:[]}catch(error){console.error("No se pudo leer "+clave,error);return[]}}
+function guardarRegistros(registros){try{localStorage.setItem(CLAVE_REGISTROS,JSON.stringify(registros));return true}catch(error){console.error("No se pudieron guardar los registros:",error);return false}}
+function crearIdRegistro(){if(window.crypto&&typeof window.crypto.randomUUID==="function")return window.crypto.randomUUID();return"reg-"+Date.now()+"-"+Math.random().toString(16).slice(2)}
+function asegurarIdsRegistros(){const registros=leerArray(CLAVE_REGISTROS);const idsUsados=new Set();let cambios=false;registros.forEach(registro=>{if(!registro||typeof registro!=="object")return;let id=String(registro.id||"").trim();if(!id||idsUsados.has(id)){id=crearIdRegistro();while(idsUsados.has(id))id=crearIdRegistro();registro.id=id;cambios=true}idsUsados.add(id)});if(cambios&&!guardarRegistros(registros))mensajeEdicion.textContent="No se pudieron preparar los registros para su edición."}
+function actualizarFechaHora(){const ahora=new Date();document.getElementById("fecha-actual").textContent=ahora.toLocaleDateString("es-CO",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).replace(/^./,letra=>letra.toUpperCase());document.getElementById("hora-actual").textContent=ahora.toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true})}
+function mostrarFecha(fecha){const valor=String(fecha||"").trim();const coincidencia=valor.match(/^(\d{4})-(\d{2})-(\d{2})$/);if(!coincidencia)return valor||"—";return coincidencia[3]+"/"+coincidencia[2]+"/"+coincidencia[1]}
+function convertirFechaAISO(valor){const fecha=String(valor||"").trim();let anio,mes,dia;let coincidencia=fecha.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);if(coincidencia){dia=Number(coincidencia[1]);mes=Number(coincidencia[2]);anio=Number(coincidencia[3])}else{coincidencia=fecha.match(/^(\d{4})-(\d{2})-(\d{2})$/);if(!coincidencia)return null;anio=Number(coincidencia[1]);mes=Number(coincidencia[2]);dia=Number(coincidencia[3])}const comprobacion=new Date(anio,mes-1,dia);if(comprobacion.getFullYear()!==anio||comprobacion.getMonth()!==mes-1||comprobacion.getDate()!==dia)return null;return String(anio).padStart(4,"0")+"-"+String(mes).padStart(2,"0")+"-"+String(dia).padStart(2,"0")}
+function crearCelda(texto,clave,idRegistro){const celda=document.createElement("td");celda.textContent=String(texto??"—");if(clave)celda.dataset.clave=clave;if(idRegistro)celda.dataset.idRegistro=idRegistro;return celda}
+function cargarTabla(){const registros=leerArray(CLAVE_REGISTROS);registros.sort((a,b)=>{const fechaA=String(a.fecha||"")+" "+String(a.hora24||a.hora||"");const fechaB=String(b.fecha||"")+" "+String(b.hora24||b.hora||"");return fechaB.localeCompare(fechaA)});cuerpoRegistros.replaceChildren();registros.forEach(registro=>{const fila=document.createElement("tr");const id=String(registro.id||"");fila.dataset.idRegistro=id;fila.append(crearCelda(mostrarFecha(registro.fecha),"fecha",id),crearCelda(registro.estudiante,"estudiante",id),crearCelda(registro.curso,"curso",id),crearCelda(registro.materia,"materia",id),crearCelda(registro.hora,"hora",id),crearCelda(registro.estado||"Presente","estado",id));cuerpoRegistros.appendChild(fila)});document.getElementById("sin-registros").hidden=registros.length>0;activarEdicionCeldas()}
+function activarEdicionCeldas(){cuerpoRegistros.querySelectorAll("td").forEach(celda=>{celda.contentEditable=modoEdicion?"true":"false";celda.classList.toggle("celda-editable",modoEdicion);celda.setAttribute("spellcheck","false")})}
+function contrasenaValida(contrasena){const instituciones=leerArray(CLAVE_INSTITUCIONES);if(instituciones.length>0)return instituciones.some(institucion=>institucion&&String(institucion.contrasena??"")===contrasena);return contrasena==="1234"}
+function establecerModoEdicion(activar){modoEdicion=activar;activarEdicionCeldas();campoContrasena.disabled=activar;campoContrasena.required=!activar;campoContrasena.value="";botonAceptar.textContent=activar?"Guardar cambios":"Aceptar";botonCancelar.textContent=activar?"Descartar":"Cancelar";textoEdicion.textContent=activar?"Puedes editar las celdas de la tabla. Pulsa Guardar cambios para conservarlos.":"Ingresa la contraseña del administrador para editar los registros.";document.getElementById("titulo-edicion").textContent=activar?"Editando registros":"Editar registros"}
+function guardarCambios(){const registros=leerArray(CLAVE_REGISTROS);const filas=[...cuerpoRegistros.querySelectorAll("tr")];const cambios=new Map();for(const fila of filas){const id=fila.dataset.idRegistro;const registro=registros.find(item=>String(item.id||"")===id);if(!registro){mensajeEdicion.textContent="No se encontró uno de los registros. Recarga la página e inténtalo de nuevo.";return false}const valores={};fila.querySelectorAll("td").forEach(celda=>{valores[celda.dataset.clave]=celda.textContent.trim()});const fechaISO=convertirFechaAISO(valores.fecha);if(!fechaISO){mensajeEdicion.textContent="Hay una fecha inválida. Usa el formato DD/MM/AAAA.";return false}if(!valores.estudiante||!valores.curso||!valores.materia||!valores.hora||!valores.estado){mensajeEdicion.textContent="No dejes vacíos los campos de la tabla.";return false}cambios.set(id,{fecha:fechaISO,estudiante:valores.estudiante,curso:valores.curso,materia:valores.materia,hora:valores.hora,estado:valores.estado})}const registrosActualizados=registros.map(registro=>{const cambio=cambios.get(String(registro.id||""));if(!cambio)return registro;return{...registro,...cambio}});if(!guardarRegistros(registrosActualizados)){mensajeEdicion.textContent="No se pudieron guardar los cambios. Comprueba el almacenamiento del navegador.";return false}return true}
+document.getElementById("formulario-edicion").addEventListener("submit",evento=>{evento.preventDefault();if(guardando)return;if(modoEdicion){guardando=true;botonAceptar.disabled=true;const guardado=guardarCambios();guardando=false;botonAceptar.disabled=false;if(!guardado)return;establecerModoEdicion(false);cargarTabla();mensajeEdicion.textContent="Los cambios se guardaron correctamente.";return}const contrasena=campoContrasena.value;if(!contrasenaValida(contrasena)){mensajeEdicion.textContent="La contraseña es incorrecta.";campoContrasena.value="";campoContrasena.focus();return}valoresOriginales=JSON.stringify(leerArray(CLAVE_REGISTROS));establecerModoEdicion(true);mensajeEdicion.textContent="Acceso autorizado. Ya puedes editar la tabla."});
+botonCancelar.addEventListener("click",()=>{if(modoEdicion){establecerModoEdicion(false);cargarTabla();mensajeEdicion.textContent="Se descartaron los cambios no guardados.";valoresOriginales="";return}campoContrasena.value="";mensajeEdicion.textContent=""});
+asegurarIdsRegistros();
+actualizarFechaHora();
+setInterval(actualizarFechaHora,1000);
+cargarTabla();
+window.addEventListener("storage",evento=>{if(evento.key===CLAVE_REGISTROS&&!modoEdicion)cargarTabla()});
+</script>
+<script src="js/seguridad.js"></script>
+</body>
+</html>
