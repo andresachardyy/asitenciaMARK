@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ffcc00">
+<title>Estudiantes | Asistencia Escolar</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+<aside class="barra-lateral">
+<div class="logo-colegio"><h2>Asistencia<br>Escolar</h2></div>
+<nav class="menu-lateral" aria-label="Navegación principal">
+<a href="inicio.html" class="opcion-menu"><span class="icono"><i class="fa-solid fa-house"></i></span><span>Inicio</span></a>
+<a href="estudiantes.html" class="opcion-menu activa" aria-current="page"><span class="icono"><i class="fa-solid fa-users"></i></span><span>Estudiantes</span></a>
+<a href="registros.html" class="opcion-menu"><span class="icono"><i class="fa-solid fa-clipboard-list"></i></span><span>Registros</span></a>
+<a href="configuracion.html" class="opcion-menu"><span class="icono"><i class="fa-solid fa-gear"></i></span><span>Configuración</span></a>
+</nav>
+<div class="pie-lateral"><p>Institución Educativa<br>© 2026</p></div>
+</aside>
+<header class="barra-superior">
+<div class="fecha-hora"><span id="fecha-actual">Cargando fecha...</span><strong id="hora-actual">Cargando hora...</strong></div>
+<div class="separador-superior" aria-hidden="true"></div>
+<a href="configuracion.html#usuarios" class="boton-perfil" title="Usuarios y seguridad" aria-label="Ir a Usuarios y seguridad"><i class="fa-solid fa-user"></i></a>
+</header>
+<main class="contenido-principal estudiantes-pagina">
+<div class="encabezado-estudiantes">
+<h1 class="titulo-pagina"><i class="fa-solid fa-users"></i> Gestión de estudiantes</h1>
+<p class="descripcion-pagina">Registra estudiantes y organiza las listas por curso.</p>
+</div>
+<section class="panel panel-formulario-estudiante">
+<h2 class="titulo-panel"><i class="fa-solid fa-user-plus"></i> <span id="titulo-formulario">Registrar estudiante</span></h2>
+<form id="formulario-estudiante">
+<input type="hidden" id="id-edicion">
+<div class="formulario-estudiante">
+<div class="campo campo-estudiante">
+<label for="codigo-estudiante">Número o código del estudiante</label>
+<input type="text" id="codigo-estudiante" maxlength="60" placeholder="Ej. EST-001" autocomplete="off" required>
+</div>
+<div class="campo campo-estudiante">
+<label for="nombres">Nombres</label>
+<input type="text" id="nombres" maxlength="100" placeholder="Nombres del estudiante" autocomplete="given-name" required>
+</div>
+<div class="campo campo-estudiante">
+<label for="apellidos">Apellidos</label>
+<input type="text" id="apellidos" maxlength="100" placeholder="Apellidos del estudiante" autocomplete="family-name" required>
+</div>
+<div class="campo campo-estudiante">
+<label for="codigo-carne">Código del carné</label>
+<input type="text" id="codigo-carne" maxlength="80" placeholder="Código de barras o carné" autocomplete="off" required>
+</div>
+<div class="campo campo-estudiante">
+<label for="curso-estudiante">Curso</label>
+<select id="curso-estudiante" required><option value="">Selecciona un curso</option></select>
+</div>
+<div class="campo campo-estudiante">
+<label for="estado-estudiante">Estado</label>
+<select id="estado-estudiante"><option value="Activo">Activo</option><option value="Inactivo">Inactivo</option></select>
+</div>
+</div>
+<div class="acciones-formulario">
+<button class="boton-amarillo" type="submit"><i class="fa-solid fa-floppy-disk"></i> <span id="texto-boton-guardar">Guardar estudiante</span></button>
+<button class="boton-secundario" type="button" id="cancelar-edicion" hidden><i class="fa-solid fa-xmark"></i> Cancelar edición</button>
+</div>
+<p id="mensaje-formulario" class="mensaje-formulario" role="status" aria-live="polite"></p>
+</form>
+</section>
+<section class="panel panel-listas-estudiantes">
+<div class="encabezado-listas">
+<div>
+<h2 class="titulo-panel"><i class="fa-solid fa-table-list"></i> Estudiantes por curso</h2>
+<p class="texto-secundario">Cada curso tiene su propia tabla de estudiantes.</p>
+</div>
+<div class="campo campo-busqueda-estudiantes">
+<label for="buscar-estudiante">Buscar estudiante</label>
+<input type="search" id="buscar-estudiante" placeholder="Código, nombre o carné..." autocomplete="off">
+</div>
+</div>
+<div class="resumen-estudiantes">
+<span><i class="fa-solid fa-users"></i> Total de estudiantes: <strong id="total-estudiantes">0</strong></span>
+<span><i class="fa-solid fa-book-open"></i> Cursos: <strong id="total-cursos">0</strong></span>
+</div>
+<div id="contenedor-cursos"></div>
+<p id="mensaje-sin-estudiantes" class="mensaje-vacio" hidden>No hay estudiantes que coincidan con la búsqueda.</p>
+<div class="seccion-agregar-curso">
+<div class="agregar-curso-texto">
+<span class="icono-agregar-curso"><i class="fa-solid fa-folder-plus"></i></span>
+<div><h3>Agregar un curso</h3><p>Crea una nueva tabla para otro curso o grupo.</p></div>
+</div>
+<form id="formulario-curso" class="formulario-curso">
+<div class="campo">
+<label for="nuevo-curso">Nombre del curso</label>
+<input type="text" id="nuevo-curso" maxlength="40" placeholder="Ej. 10-01" required>
+</div>
+<button class="boton-amarillo" type="submit"><i class="fa-solid fa-plus"></i> Agregar curso</button>
+</form>
+<p id="mensaje-curso" class="mensaje-formulario" role="status" aria-live="polite"></p>
+</div>
+</section>
+</main>
+<script>
+"use strict";
+const fechaActual=document.getElementById("fecha-actual");
+const horaActual=document.getElementById("hora-actual");
+function actualizarFechaHora(){const ahora=new Date();fechaActual.textContent=ahora.toLocaleDateString("es-CO",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).replace(/^./,letra=>letra.toUpperCase());horaActual.textContent=ahora.toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true})}
+actualizarFechaHora();
+setInterval(actualizarFechaHora,1000);
+const CLAVE_ESTUDIANTES="asistencia_escolar_estudiantes_v2";
+const CLAVE_CURSOS="asistencia_escolar_cursos_v2";
+function leerAlmacenamiento(clave){try{const dato=localStorage.getItem(clave);const resultado=dato===null?[]:JSON.parse(dato);return Array.isArray(resultado)?resultado:[]}catch(error){console.error("Error al leer "+clave,error);return[]}}
+let estudiantes=leerAlmacenamiento(CLAVE_ESTUDIANTES);
+let cursos=leerAlmacenamiento(CLAVE_CURSOS).filter(curso=>typeof curso==="string"&&curso.trim()).map(curso=>curso.trim());
+function normalizar(texto){return String(texto??"").trim().toLocaleLowerCase("es")}
+function guardarTodo(){try{localStorage.setItem(CLAVE_ESTUDIANTES,JSON.stringify(estudiantes));localStorage.setItem(CLAVE_CURSOS,JSON.stringify(cursos));return true}catch(error){console.error("Error al guardar los datos:",error);alert("No se pudieron guardar los datos. Comprueba el almacenamiento del navegador.");return false}}
+function crearId(){if(window.crypto&&typeof window.crypto.randomUUID==="function")return window.crypto.randomUUID();return"est-"+Date.now()+"-"+Math.random().toString(16).slice(2)}
+function mostrarMensaje(elemento,texto){elemento.textContent=texto}
+function agregarCursoEnMemoria(nombre){const curso=String(nombre??"").trim();if(!curso)return false;if(cursos.some(item=>normalizar(item)===normalizar(curso)))return false;cursos.push(curso);return true}
+estudiantes.forEach(estudiante=>{if(estudiante&&estudiante.curso)agregarCursoEnMemoria(estudiante.curso)});
+if(cursos.length===0)["6°","7°","8°","9°","10°","11°"].forEach(agregarCursoEnMemoria);
+guardarTodo();
+const formularioEstudiante=document.getElementById("formulario-estudiante");
+const campoId=document.getElementById("id-edicion");
+const campoCodigo=document.getElementById("codigo-estudiante");
+const campoNombres=document.getElementById("nombres");
+const campoApellidos=document.getElementById("apellidos");
+const campoCarne=document.getElementById("codigo-carne");
+const campoCurso=document.getElementById("curso-estudiante");
+const campoEstado=document.getElementById("estado-estudiante");
+const campoBuscar=document.getElementById("buscar-estudiante");
+const contenedorCursos=document.getElementById("contenedor-cursos");
+const totalEstudiantes=document.getElementById("total-estudiantes");
+const totalCursos=document.getElementById("total-cursos");
+const mensajeSinEstudiantes=document.getElementById("mensaje-sin-estudiantes");
+const mensajeFormulario=document.getElementById("mensaje-formulario");
+const mensajeCurso=document.getElementById("mensaje-curso");
+const tituloFormulario=document.getElementById("titulo-formulario");
+const textoBotonGuardar=document.getElementById("texto-boton-guardar");
+const botonCancelar=document.getElementById("cancelar-edicion");
+function actualizarSelectorCursos(){const valorAnterior=campoCurso.value;const fragmento=document.createDocumentFragment();const opcionInicial=document.createElement("option");opcionInicial.value="";opcionInicial.textContent="Selecciona un curso";fragmento.appendChild(opcionInicial);const cursosOrdenados=[...cursos].sort((a,b)=>a.localeCompare(b,"es",{numeric:true,sensitivity:"base"}));cursosOrdenados.forEach(curso=>{const opcion=document.createElement("option");opcion.value=curso;opcion.textContent=curso;fragmento.appendChild(opcion)});campoCurso.replaceChildren(fragmento);if(cursos.some(curso=>curso===valorAnterior))campoCurso.value=valorAnterior}
+function eliminarCurso(nombreCurso){const inscritos=estudiantes.filter(estudiante=>normalizar(estudiante.curso)===normalizar(nombreCurso));const confirmacion=inscritos.length>0?"El curso "+nombreCurso+" tiene "+inscritos.length+" estudiante(s).\n\nSi lo eliminas, también se eliminarán esos estudiantes.\n\n¿Deseas continuar?":"¿Deseas eliminar el curso "+nombreCurso+"?";if(!confirm(confirmacion))return;const cursosAnteriores=[...cursos];const estudiantesAnteriores=[...estudiantes];cursos=cursos.filter(curso=>normalizar(curso)!==normalizar(nombreCurso));estudiantes=estudiantes.filter(estudiante=>normalizar(estudiante.curso)!==normalizar(nombreCurso));if(!guardarTodo()){cursos=cursosAnteriores;estudiantes=estudiantesAnteriores;actualizarSelectorCursos();renderizarEstudiantes();return}if(campoId.value&&inscritos.some(estudiante=>estudiante.id===campoId.value))limpiarFormulario();actualizarSelectorCursos();renderizarEstudiantes();mostrarMensaje(mensajeCurso,"El curso "+nombreCurso+" se eliminó correctamente.")}
+document.getElementById("formulario-curso").addEventListener("submit",evento=>{evento.preventDefault();const campoNuevoCurso=document.getElementById("nuevo-curso");const nombre=campoNuevoCurso.value.trim();if(!nombre){mostrarMensaje(mensajeCurso,"Escribe el nombre del curso.");return}if(cursos.some(curso=>normalizar(curso)===normalizar(nombre))){mostrarMensaje(mensajeCurso,"Ese curso ya existe.");campoNuevoCurso.focus();return}const cursosAnteriores=[...cursos];cursos.push(nombre);if(!guardarTodo()){cursos=cursosAnteriores;return}campoNuevoCurso.value="";actualizarSelectorCursos();campoCurso.value=nombre;renderizarEstudiantes();mostrarMensaje(mensajeCurso,"Curso agregado correctamente.")});
+formularioEstudiante.addEventListener("submit",evento=>{evento.preventDefault();mostrarMensaje(mensajeFormulario,"");const id=campoId.value;const codigo=campoCodigo.value.trim();const nombres=campoNombres.value.trim();const apellidos=campoApellidos.value.trim();const carne=campoCarne.value.trim();const curso=campoCurso.value;const estado=campoEstado.value;if(![codigo,nombres,apellidos,carne,curso].every(Boolean)){mostrarMensaje(mensajeFormulario,"Completa todos los campos obligatorios.");return}const duplicadoCodigo=estudiantes.some(estudiante=>normalizar(estudiante.codigo)===normalizar(codigo)&&estudiante.id!==id);if(duplicadoCodigo){mostrarMensaje(mensajeFormulario,"Ese código de estudiante ya está registrado.");campoCodigo.focus();return}const duplicadoCarne=estudiantes.some(estudiante=>normalizar(estudiante.carne)===normalizar(carne)&&estudiante.id!==id);if(duplicadoCarne){mostrarMensaje(mensajeFormulario,"Ese código de carné ya está registrado.");campoCarne.focus();return}const estudiantesAnteriores=[...estudiantes];const cursosAnteriores=[...cursos];const estudiante={id:id||crearId(),codigo,nombres,apellidos,carne,curso,estado};if(id)estudiantes=estudiantes.map(actual=>actual.id===id?estudiante:actual);else estudiantes=[...estudiantes,estudiante];agregarCursoEnMemoria(curso);if(!guardarTodo()){estudiantes=estudiantesAnteriores;cursos=cursosAnteriores;actualizarSelectorCursos();return}limpiarFormulario();actualizarSelectorCursos();renderizarEstudiantes();mostrarMensaje(mensajeFormulario,id?"Estudiante actualizado correctamente.":"Estudiante registrado correctamente.")});
+function editarEstudiante(id){const estudiante=estudiantes.find(item=>item.id===id);if(!estudiante)return;campoId.value=estudiante.id;campoCodigo.value=estudiante.codigo||"";campoNombres.value=estudiante.nombres||"";campoApellidos.value=estudiante.apellidos||"";campoCarne.value=estudiante.carne||"";actualizarSelectorCursos();campoCurso.value=estudiante.curso||"";campoEstado.value=estudiante.estado||"Activo";tituloFormulario.textContent="Editar estudiante";textoBotonGuardar.textContent="Guardar cambios";botonCancelar.hidden=false;mostrarMensaje(mensajeFormulario,"Editando los datos del estudiante.");formularioEstudiante.scrollIntoView({behavior:"smooth",block:"start"});campoCodigo.focus({preventScroll:true})}
+function eliminarEstudiante(id){const estudiante=estudiantes.find(item=>item.id===id);if(!estudiante)return;const nombreCompleto=(estudiante.nombres||"")+" "+(estudiante.apellidos||"");if(!confirm("¿Deseas eliminar a "+nombreCompleto.trim()+"?"))return;const estudiantesAnteriores=[...estudiantes];estudiantes=estudiantes.filter(item=>item.id!==id);if(!guardarTodo()){estudiantes=estudiantesAnteriores;return}if(campoId.value===id)limpiarFormulario();renderizarEstudiantes();mostrarMensaje(mensajeFormulario,"Estudiante eliminado correctamente.")}
+function limpiarFormulario(){formularioEstudiante.reset();campoId.value="";tituloFormulario.textContent="Registrar estudiante";textoBotonGuardar.textContent="Guardar estudiante";botonCancelar.hidden=true;mostrarMensaje(mensajeFormulario,"")}
+botonCancelar.addEventListener("click",limpiarFormulario);
+function crearCelda(texto){const celda=document.createElement("td");celda.textContent=String(texto??"");return celda}
+function crearBotonAccion(texto,clase,icono,funcion){const boton=document.createElement("button");boton.type="button";boton.className=clase;boton.title=texto;boton.setAttribute("aria-label",texto);const imagen=document.createElement("i");imagen.className=icono;imagen.setAttribute("aria-hidden","true");boton.append(imagen,document.createTextNode(" "+texto));boton.addEventListener("click",funcion);return boton}
+function crearTablaCurso(curso,listaCurso,consulta){const seccion=document.createElement("section");seccion.className="bloque-curso";const encabezado=document.createElement("div");encabezado.className="encabezado-curso";const titulo=document.createElement("h3");const iconoCurso=document.createElement("i");iconoCurso.className="fa-solid fa-book-open";iconoCurso.setAttribute("aria-hidden","true");titulo.append(iconoCurso,document.createTextNode(" "+curso));const cantidad=document.createElement("span");cantidad.className="cantidad-curso";cantidad.textContent=listaCurso.length+" "+(listaCurso.length===1?"estudiante":"estudiantes");const accionesCurso=document.createElement("div");accionesCurso.className="acciones-curso";accionesCurso.append(cantidad,crearBotonAccion("Eliminar curso","boton-eliminar-curso","fa-solid fa-trash",()=>eliminarCurso(curso)));encabezado.append(titulo,accionesCurso);const tablaContenedor=document.createElement("div");tablaContenedor.className="tabla-contenedor tabla-estudiantes-contenedor";const tabla=document.createElement("table");tabla.className="tabla-estudiantes";const thead=document.createElement("thead");const filaTitulos=document.createElement("tr");["N.º","Código del estudiante","Nombres","Apellidos","Código del carné","Estado","Acciones"].forEach(texto=>{const th=document.createElement("th");th.scope="col";th.textContent=texto;filaTitulos.appendChild(th)});thead.appendChild(filaTitulos);const tbody=document.createElement("tbody");if(listaCurso.length===0){const fila=document.createElement("tr");const celda=crearCelda(consulta?"No hay coincidencias en este curso.":"Todavía no hay estudiantes en este curso.");celda.colSpan=7;celda.className="celda-vacia";fila.appendChild(celda);tbody.appendChild(fila)}else{listaCurso.forEach((estudiante,indice)=>{const fila=document.createElement("tr");fila.append(crearCelda(indice+1),crearCelda(estudiante.codigo),crearCelda(estudiante.nombres),crearCelda(estudiante.apellidos),crearCelda(estudiante.carne));const celdaEstado=crearCelda(estudiante.estado||"Activo");celdaEstado.className="celda-estado";fila.appendChild(celdaEstado);const celdaAcciones=document.createElement("td");celdaAcciones.className="celda-acciones";celdaAcciones.append(crearBotonAccion("Editar","boton-tabla boton-editar","fa-solid fa-pen",()=>editarEstudiante(estudiante.id)),crearBotonAccion("Eliminar","boton-tabla boton-borrar","fa-solid fa-trash",()=>eliminarEstudiante(estudiante.id)));fila.appendChild(celdaAcciones);tbody.appendChild(fila)})}tabla.append(thead,tbody);tablaContenedor.appendChild(tabla);seccion.append(encabezado,tablaContenedor);return seccion}
+function renderizarEstudiantes(){const consulta=normalizar(campoBuscar.value);contenedorCursos.replaceChildren();const cursosOrdenados=[...cursos].sort((a,b)=>a.localeCompare(b,"es",{numeric:true,sensitivity:"base"}));let coincidenciasTotales=0;cursosOrdenados.forEach(curso=>{const estudiantesCurso=estudiantes.filter(estudiante=>normalizar(estudiante.curso)===normalizar(curso));const filtrados=estudiantesCurso.filter(estudiante=>{if(!consulta)return true;return[estudiante.codigo,estudiante.nombres,estudiante.apellidos,estudiante.carne,estudiante.curso,estudiante.estado].some(valor=>normalizar(valor).includes(consulta))});coincidenciasTotales+=filtrados.length;contenedorCursos.appendChild(crearTablaCurso(curso,filtrados,consulta))});totalEstudiantes.textContent=String(estudiantes.length);totalCursos.textContent=String(cursos.length);mensajeSinEstudiantes.hidden=!(consulta&&coincidenciasTotales===0);if(cursos.length===0){const aviso=document.createElement("p");aviso.className="mensaje-vacio";aviso.textContent="Agrega un curso para comenzar a organizar estudiantes.";contenedorCursos.appendChild(aviso)}}
+campoBuscar.addEventListener("input",renderizarEstudiantes);
+actualizarSelectorCursos();
+renderizarEstudiantes();
+</script>
+<script src="js/seguridad.js"></script>
+</body>
+</html>

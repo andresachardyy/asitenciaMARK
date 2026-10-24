@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configuración | Asistencia Escolar</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+<script src="js/seguridad.js"></script>
+</head>
+<body>
+<aside class="barra-lateral">
+    <div class="logo-colegio"><h2>Asistencia<br>Escolar</h2></div>
+    <nav class="menu-lateral">
+        <a href="inicio.html" class="opcion-menu"><span class="icono"><i class="fa-solid fa-house"></i></span><span>Inicio</span></a>
+        <a href="estudiantes.html" class="opcion-menu"><span class="icono"><i class="fa-solid fa-users"></i></span><span>Estudiantes</span></a>
+        <a href="registros.html" class="opcion-menu"><span class="icono"><i class="fa-solid fa-clipboard-list"></i></span><span>Registros</span></a>
+        <a href="configuracion.html" class="opcion-menu activa" aria-current="page"><span class="icono"><i class="fa-solid fa-gear"></i></span><span>Configuración</span></a>
+    </nav>
+    <div class="pie-lateral"><p>Institución Educativa<br>© 2026</p></div>
+</aside>
+
+<header class="barra-superior">
+    <div class="fecha-hora"><span id="fecha-actual"></span><strong id="hora-actual"></strong></div>
+    <div class="separador-superior"></div>
+    <button class="boton-perfil" type="button" title="Cuenta de usuario" aria-label="Cuenta de usuario"><i class="fa-solid fa-user"></i></button>
+</header>
+
+<main class="contenido configuracion">
+    <header class="config-encabezado">
+        <i class="fa-solid fa-gear icono-titulo"></i>
+        <div><h1>Configuración</h1><p class="descripcion">Administra las instituciones y las opciones del sistema.</p></div>
+    </header>
+
+    <div class="config-distribucion">
+        <nav class="config-menu" aria-label="Secciones de configuración">
+            <button type="button" class="config-opcion activa" data-seccion="institucion"><i class="fa-solid fa-school"></i><span>Datos de la institución</span></button>
+            <button type="button" class="config-opcion" data-seccion="usuarios"><i class="fa-solid fa-user-shield"></i><span>Usuarios y seguridad</span></button>
+            <button type="button" class="config-opcion" data-seccion="materias"><i class="fa-solid fa-book"></i><span>Materias</span></button>
+            <button type="button" class="config-opcion" data-seccion="estados"><i class="fa-solid fa-clipboard-check"></i><span>Estados de asistencia</span></button>
+        </nav>
+
+        <div class="config-paneles">
+            <section class="config-seccion" id="seccion-institucion">
+                <div class="config-titulo-panel"><i class="fa-solid fa-school"></i><div><h2>Datos de la institución</h2><p>Registra los datos institucionales y la cuenta administradora.</p></div></div>
+
+                <form id="formulario-institucion">
+                    <div class="config-campos">
+                        <div class="campo-config"><label for="nombre-institucion">Nombre de la institución</label><input type="text" id="nombre-institucion" name="nombre" placeholder="Nombre de la institución" required></div>
+                        <div class="campo-config"><label for="nit">NIT</label><input type="text" id="nit" name="nit" placeholder="Número de identificación" required></div>
+                        <div class="campo-config"><label for="direccion">Dirección</label><input type="text" id="direccion" name="direccion" placeholder="Dirección de la institución" required></div>
+                        <div class="campo-config"><label for="correo">Correo institucional</label><input type="email" id="correo" name="correo" placeholder="correo@institucion.com" required></div>
+                        <div class="campo-config"><label for="telefono">Teléfono</label><input type="tel" id="telefono" name="telefono" placeholder="Teléfono de contacto"></div>
+                        <div class="campo-config"><label for="ciudad">Ciudad</label><input type="text" id="ciudad" name="ciudad" placeholder="Ciudad" required></div>
+                        <div class="campo-config"><label for="correo-admin">Correo del administrador</label><input type="email" id="correo-admin" name="correoAdmin" placeholder="Correo de acceso" autocomplete="username" required></div>
+                        <div class="campo-config">
+                            <label for="contrasena-admin">Contraseña del administrador</label>
+                            <div class="campo-contrasena">
+                                <input type="password" id="contrasena-admin" name="contrasena" placeholder="Contraseña de la cuenta" autocomplete="new-password" required>
+                                <button type="button" class="boton-ver-contrasena" data-campo="contrasena-admin" aria-label="Mostrar contraseña" title="Mostrar contraseña"><i class="fa-solid fa-eye"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="config-acciones">
+                        <p id="mensaje-institucion" role="status" aria-live="polite"></p>
+                        <button type="submit" class="boton-guardar"><i class="fa-solid fa-plus"></i> Agregar institución</button>
+                    </div>
+                </form>
+
+                <div class="lista-instituciones">
+                    <h3>Instituciones registradas</h3>
+                    <div class="tabla-registros-contenedor"><table class="tabla-instituciones"><thead><tr><th>Institución</th><th>NIT</th><th>Correo administrador</th></tr></thead><tbody id="tabla-instituciones"></tbody></table></div>
+                    <p id="sin-instituciones" class="mensaje-vacio">No hay instituciones registradas.</p>
+                </div>
+            </section>
+
+            <section class="config-seccion" id="seccion-usuarios" hidden>
+                <div class="config-titulo-panel"><i class="fa-solid fa-user-shield"></i><div><h2>Usuarios y seguridad</h2><p>Consulta las cuentas administradoras registradas.</p></div></div>
+                <div class="cuentas-resumen"><i class="fa-solid fa-users"></i><div><strong id="total-cuentas">0</strong><span>Cuentas registradas</span></div></div>
+                <div class="tabla-registros-contenedor"><table class="tabla-instituciones"><thead><tr><th>Institución</th><th>Correo</th><th>Rol</th><th>Acciones</th></tr></thead><tbody id="tabla-cuentas"></tbody></table></div>
+                <p id="sin-cuentas" class="mensaje-vacio">No hay cuentas registradas.</p>
+                <p class="nota-formulario">La contraseña guardada en este navegador ofrece únicamente protección básica local.</p>
+            </section>
+
+            <section class="config-seccion" id="seccion-materias" hidden>
+                <div class="config-titulo-panel"><i class="fa-solid fa-book-open"></i><div><h2>Administrar materias</h2><p>Estas materias aparecerán en el selector de Inicio.</p></div></div>
+                <form id="formulario-materia">
+                    <div class="config-campos"><div class="campo-config"><label for="nombre-materia">Nombre de la materia</label><input type="text" id="nombre-materia" maxlength="80" placeholder="Ej. Matemáticas" required></div></div>
+                    <div class="config-acciones"><p id="mensaje-materias" role="status" aria-live="polite"></p><div><button type="submit" class="boton-guardar" id="boton-guardar-materia"><i class="fa-solid fa-plus"></i> Agregar materia</button> <button type="button" class="boton-secundario" id="boton-cancelar-materia" hidden>Cancelar</button></div></div>
+                </form>
+                <div class="lista-instituciones">
+                    <h3>Materias registradas</h3>
+                    <div class="tabla-registros-contenedor"><table class="tabla-instituciones"><thead><tr><th>Materia</th><th>Acciones</th></tr></thead><tbody id="tabla-materias"></tbody></table></div>
+                    <p id="sin-materias" class="mensaje-vacio">Todavía no hay materias registradas.</p>
+                </div>
+            </section>
+
+            <section class="config-seccion" id="seccion-estados" hidden>
+                <div class="config-titulo-panel"><i class="fa-solid fa-clipboard-check"></i><div><h2>Estados de asistencia</h2><p>Estados utilizados para identificar la asistencia de los estudiantes.</p></div></div>
+                <div class="config-interruptores">
+                    <div class="estado-config"><span class="estado-punto"></span><div><strong>Presente</strong><p>El estudiante asistió a clase.</p></div></div>
+                    <div class="estado-config"><span class="estado-punto"></span><div><strong>Ausente</strong><p>El estudiante no asistió a clase.</p></div></div>
+                    <div class="estado-config"><span class="estado-punto"></span><div><strong>Tardanza</strong><p>El estudiante llegó después de la hora establecida.</p></div></div>
+                </div>
+            </section>
+        </div>
+    </div>
+</main>
+
+<style>
+.campo-contrasena{display:flex;align-items:center;width:100%;border:1px solid #ffcc00;border-radius:6px;overflow:hidden;box-sizing:border-box}
+.campo-contrasena input{flex:1;min-width:0;border:0!important;outline:none}
+.boton-ver-contrasena{display:flex;align-items:center;justify-content:center;align-self:stretch;min-width:44px;padding:0 12px;background:#ffcc00;color:#000;border:0;cursor:pointer}
+.boton-ver-contrasena:hover{background:#e6b800}
+.boton-eliminar-cuenta{background:#ffcc00;color:#000;border:1px solid #ffcc00;border-radius:5px;padding:8px 10px;font-weight:bold;cursor:pointer}
+.boton-eliminar-cuenta:hover{background:#000;color:#ffcc00}
+</style>
+
+<script>
+"use strict";
+
+const CLAVE_INSTITUCIONES="instituciones-escolares";
+const CLAVE_MATERIAS="materias-escolares";
+const CLAVE_MATERIA_SELECCIONADA="materia-seleccionada";
+
+function leerLista(clave){try{const datos=JSON.parse(localStorage.getItem(clave)||"[]");return Array.isArray(datos)?datos:[]}catch(error){console.error("Error leyendo "+clave,error);return[]}}
+function guardarLista(clave,lista){try{localStorage.setItem(clave,JSON.stringify(lista));return true}catch(error){console.error("Error guardando "+clave,error);return false}}
+function normalizar(valor){return String(valor??"").trim().toLocaleLowerCase("es")}
+function obtenerNombreMateria(materia){return typeof materia==="string"?materia.trim():materia&&typeof materia==="object"?String(materia.nombre??materia.materia??"").trim():""}
+function crearCelda(fila,valor){const celda=document.createElement("td");celda.textContent=String(valor||"—");fila.appendChild(celda);return celda}
+
+document.querySelectorAll(".boton-ver-contrasena").forEach(boton=>boton.addEventListener("click",()=>{const campo=document.getElementById(boton.dataset.campo);if(!campo)return;const mostrar=campo.type==="password";campo.type=mostrar?"text":"password";boton.innerHTML=mostrar?'<i class="fa-solid fa-eye-slash"></i>':'<i class="fa-solid fa-eye"></i>';boton.title=mostrar?"Ocultar contraseña":"Mostrar contraseña";boton.setAttribute("aria-label",boton.title);campo.focus()}));
+
+function actualizarFechaHora(){const fecha=document.getElementById("fecha-actual"),hora=document.getElementById("hora-actual"),ahora=new Date();if(fecha)fecha.textContent=ahora.toLocaleDateString("es-CO",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).replace(/^./,letra=>letra.toUpperCase());if(hora)hora.textContent=ahora.toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true})}
+actualizarFechaHora();
+setInterval(actualizarFechaHora,1000);
+
+document.querySelectorAll(".config-opcion").forEach(boton=>boton.addEventListener("click",()=>{const destino="seccion-"+boton.dataset.seccion;document.querySelectorAll(".config-opcion").forEach(opcion=>opcion.classList.toggle("activa",opcion===boton));document.querySelectorAll(".config-seccion").forEach(seccion=>seccion.hidden=seccion.id!==destino)}));
+
+function mostrarInstituciones(){const instituciones=leerLista(CLAVE_INSTITUCIONES),tabla=document.getElementById("tabla-instituciones");tabla.replaceChildren();instituciones.forEach(institucion=>{const fila=document.createElement("tr");crearCelda(fila,institucion.nombre);crearCelda(fila,institucion.nit);crearCelda(fila,institucion.correoAdmin);tabla.appendChild(fila)});document.getElementById("sin-instituciones").hidden=instituciones.length>0;mostrarCuentas()}
+
+document.getElementById("formulario-institucion").addEventListener("submit",evento=>{
+    evento.preventDefault();
+    const formulario=evento.currentTarget,mensaje=document.getElementById("mensaje-institucion"),datos=Object.fromEntries(new FormData(formulario).entries()),instituciones=leerLista(CLAVE_INSTITUCIONES);
+    for(const campo of ["nombre","nit","direccion","correo","ciudad","correoAdmin","contrasena"])datos[campo]=String(datos[campo]||"").trim();
+    datos.telefono=String(datos.telefono||"").trim();
+    if(!datos.nombre||!datos.nit||!datos.direccion||!datos.correo||!datos.ciudad||!datos.correoAdmin||!datos.contrasena){mensaje.textContent="Completa todos los campos obligatorios.";return}
+    if(instituciones.some(i=>normalizar(i.nit)===normalizar(datos.nit))){mensaje.textContent="Ya existe una institución con ese NIT.";return}
+    if(instituciones.some(i=>normalizar(i.correoAdmin)===normalizar(datos.correoAdmin))){mensaje.textContent="Ese correo de administrador ya está registrado.";return}
+    instituciones.push(datos);
+    if(!guardarLista(CLAVE_INSTITUCIONES,instituciones)){mensaje.textContent="No fue posible guardar la institución.";return}
+    formulario.reset();mensaje.textContent="Institución agregada correctamente.";mostrarInstituciones();
+});
+
+function mostrarCuentas(){
+    const instituciones=leerLista(CLAVE_INSTITUCIONES),tabla=document.getElementById("tabla-cuentas");tabla.replaceChildren();
+    instituciones.forEach(institucion=>{
+        const fila=document.createElement("tr");crearCelda(fila,institucion.nombre);crearCelda(fila,institucion.correoAdmin);crearCelda(fila,"Administrador");
+        const celda=document.createElement("td"),boton=document.createElement("button");boton.type="button";boton.className="boton-eliminar-cuenta";boton.innerHTML='<i class="fa-solid fa-trash" aria-hidden="true"></i> Eliminar';
+        boton.addEventListener("click",()=>{
+            if(!confirm("¿Deseas eliminar la cuenta administradora de "+(institucion.nombre||"esta institución")+"? Esta acción no se puede deshacer."))return;
+            const lista=leerLista(CLAVE_INSTITUCIONES),indice=lista.findIndex(i=>String(i.nit||"")===String(institucion.nit||"")&&normalizar(i.correoAdmin)===normalizar(institucion.correoAdmin));
+            if(indice<0){mostrarInstituciones();return}
+            lista.splice(indice,1);
+            if(!guardarLista(CLAVE_INSTITUCIONES,lista)){alert("No se pudo eliminar la cuenta.");return}
+            mostrarInstituciones();document.getElementById("mensaje-institucion").textContent="La cuenta y su institución se eliminaron correctamente.";
+        });
+        celda.appendChild(boton);fila.appendChild(celda);tabla.appendChild(fila);
+    });
+    document.getElementById("total-cuentas").textContent=String(instituciones.length);
+    document.getElementById("sin-cuentas").hidden=instituciones.length>0;
+}
+
+let indiceEdicionMateria=-1;
+function cancelarEdicionMateria(){indiceEdicionMateria=-1;document.getElementById("formulario-materia").reset();document.getElementById("boton-guardar-materia").innerHTML='<i class="fa-solid fa-plus" aria-hidden="true"></i> Agregar materia';document.getElementById("boton-cancelar-materia").hidden=true}
+
+function mostrarMaterias(){
+    const materias=leerLista(CLAVE_MATERIAS),tabla=document.getElementById("tabla-materias");tabla.replaceChildren();
+    materias.forEach((materia,indice)=>{
+        const nombre=obtenerNombreMateria(materia);if(!nombre)return;
+        const fila=document.createElement("tr"),celdaNombre=document.createElement("td"),celdaAcciones=document.createElement("td");celdaNombre.textContent=nombre;
+        const editar=document.createElement("button");editar.type="button";editar.className="boton-guardar";editar.innerHTML='<i class="fa-solid fa-pen"></i> Editar';
+        editar.addEventListener("click",()=>{indiceEdicionMateria=indice;document.getElementById("nombre-materia").value=nombre;document.getElementById("boton-guardar-materia").innerHTML='<i class="fa-solid fa-floppy-disk"></i> Guardar cambios';document.getElementById("boton-cancelar-materia").hidden=false;document.getElementById("mensaje-materias").textContent="";document.getElementById("nombre-materia").focus()});
+        const eliminar=document.createElement("button");eliminar.type="button";eliminar.className="boton-eliminar-cuenta";eliminar.innerHTML='<i class="fa-solid fa-trash"></i> Eliminar';
+        eliminar.addEventListener("click",()=>{if(!confirm('¿Deseas eliminar la materia "'+nombre+'"?'))return;const lista=leerLista(CLAVE_MATERIAS);if(indice>=lista.length||normalizar(obtenerNombreMateria(lista[indice]))!==normalizar(nombre)){mostrarMaterias();return}lista.splice(indice,1);if(!guardarLista(CLAVE_MATERIAS,lista)){document.getElementById("mensaje-materias").textContent="No fue posible eliminar la materia.";return}if(normalizar(localStorage.getItem(CLAVE_MATERIA_SELECCIONADA))===normalizar(nombre))localStorage.removeItem(CLAVE_MATERIA_SELECCIONADA);cancelarEdicionMateria();mostrarMaterias();document.getElementById("mensaje-materias").textContent="Materia eliminada correctamente."});
+        celdaAcciones.append(editar,document.createTextNode(" "),eliminar);fila.append(celdaNombre,celdaAcciones);tabla.appendChild(fila);
+    });
+    document.getElementById("sin-materias").hidden=tabla.rows.length>0;
+}
+
+document.getElementById("formulario-materia").addEventListener("submit",evento=>{
+    evento.preventDefault();
+    const campo=document.getElementById("nombre-materia"),nombre=campo.value.trim(),mensaje=document.getElementById("mensaje-materias"),materias=leerLista(CLAVE_MATERIAS),editando=indiceEdicionMateria>=0;
+    if(!nombre){mensaje.textContent="Escribe el nombre de la materia.";return}
+    if(editando&&indiceEdicionMateria>=materias.length){mensaje.textContent="No se encontró la materia. Actualiza la lista.";cancelarEdicionMateria();mostrarMaterias();return}
+    if(materias.some((m,i)=>normalizar(obtenerNombreMateria(m))===normalizar(nombre)&&i!==indiceEdicionMateria)){mensaje.textContent="Esa materia ya está registrada.";return}
+    const anterior=editando?obtenerNombreMateria(materias[indiceEdicionMateria]):"";
+    if(editando){const actual=materias[indiceEdicionMateria];materias[indiceEdicionMateria]=actual&&typeof actual==="object"?{...actual,nombre}:nombre}else materias.push(nombre);
+    if(!guardarLista(CLAVE_MATERIAS,materias)){mensaje.textContent="No se pudo guardar la materia.";return}
+    if(anterior&&normalizar(localStorage.getItem(CLAVE_MATERIA_SELECCIONADA))===normalizar(anterior))localStorage.setItem(CLAVE_MATERIA_SELECCIONADA,nombre);
+    cancelarEdicionMateria();mostrarMaterias();mensaje.textContent=editando?"Materia actualizada correctamente.":"Materia agregada correctamente.";
+});
+
+document.getElementById("boton-cancelar-materia").addEventListener("click",()=>{cancelarEdicionMateria();document.getElementById("mensaje-materias").textContent=""});
+
+mostrarInstituciones();
+mostrarMaterias();
+
+window.addEventListener("storage",evento=>{
+    if(evento.key===CLAVE_INSTITUCIONES||evento.key===null)mostrarInstituciones();
+    if(evento.key===CLAVE_MATERIAS||evento.key===CLAVE_MATERIA_SELECCIONADA||evento.key===null)mostrarMaterias();
+});
+
+function abrirSeccionDesdeEnlace(){if(location.hash!=="#usuarios")return;document.querySelector('.config-opcion[data-seccion="usuarios"]')?.click()}
+abrirSeccionDesdeEnlace();
+</script>
+</body>
+</html>
